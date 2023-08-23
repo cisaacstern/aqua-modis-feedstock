@@ -1,0 +1,3 @@
+recipes:
+  - id: modis-zarr
+    object: recipe:transforms
