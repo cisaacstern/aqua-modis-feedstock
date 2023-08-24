@@ -22,8 +22,7 @@ def make_modis_url(time: pd.Timestamp, var: str) -> str:
     fmt = "%Y%m%d"
     end = time + dt.timedelta(days=7)
     return (
-        # "https://oceandata.sci.gsfc.nasa.gov/ob/getfile/"
-        "./example-data/"  # for local testing, with data pre-fetched via wget
+        "https://oceandata.sci.gsfc.nasa.gov/ob/getfile/"
         f"AQUA_MODIS.{time.strftime(fmt)}_{end.strftime(fmt)}.L3m.8D.{var}.4km.nc"
     )
 
@@ -58,14 +57,14 @@ class Preprocess(beam.PTransform):
 transforms = (
     beam.Create(pattern.items())
     | OpenURLWithFSSpec(
-        # open_kwargs={"client_kwargs": client_kwargs},
-        # max_concurrency=1,
+        open_kwargs={"block_size": 0, "client_kwargs": client_kwargs},
+        max_concurrency=10,
     )
     | OpenWithXarray()
     | Preprocess()
     | StoreToZarr(
         store_name="modis.zarr",
         combine_dims=pattern.combine_dim_keys,
-        target_chunks={"time": 1, "lat": 4320 / 2, "lon": 8640 / 2},
+        target_chunks={"time": 1, "lat": int(4320 / 2), "lon": int(8640 / 2)},
     )
 )
