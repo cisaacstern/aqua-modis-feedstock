@@ -1,7 +1,7 @@
-# pangeo-forge-runner target dirs
+# pangeo-forge-runner
 target/
 cache/
-
+pangeo_forge_runner_config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
