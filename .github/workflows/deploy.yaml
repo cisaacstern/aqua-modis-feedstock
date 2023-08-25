@@ -43,7 +43,7 @@ jobs:
                 "service_account_email": "pangeo-forge-dataflow@pangeo-forge-4967.iam.gserviceaccount.com",
                 "project_id": "pangeo-forge-4967",
                 "temp_gcs_location": "gs://pangeo-forge-prod-dataflow/temp",
-            },qq
+            },
             "TargetStorage": {
                 "fsspec_class": "s3fs.S3FileSystem",
                 "fsspec_kwargs": {
