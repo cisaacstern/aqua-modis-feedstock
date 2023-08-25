@@ -21,11 +21,48 @@ jobs:
         uses: "google-github-actions/auth@v1"
         with:
           credentials_json: "${{ secrets.GCP_DATAFLOW_SERVICE_KEY }}"
+      - name: "Set prune config based on github event type"
+        run: >
+          if ${{ github.event_name == 'pull_request' }}; then
+            echo prune=true >> $GITHUB_ENV
+          else
+            echo prune=false >> $GITHUB_ENV
+          fi
       - name: "Deploy recipes"
         uses: "pangeo-forge/deploy-recipe-action@latest"
         with:
-          select_recipe_by_label: "" #to circumvent https://github.com/leap-stc/cmip6-leap-feedstock/issues/6#issuecomment-1668577971
-          pangeo_forge_runner_config: "./configs/config-pgf-runner-leap-dataflow.json"
+          select_recipe_by_label: ""  # workaround for https://github.com/leap-stc/cmip6-leap-feedstock/issues/6#issuecomment-1668577971
+          pangeo_forge_runner_config: >
+            {
+            "Bake": {
+                "prune": ${{ env.prune }},
+                "bakery_class": "pangeo_forge_runner.bakery.dataflow.DataflowBakery"
+            },
+            "DataflowBakery": {
+                "use_public_ips": false,
+                "service_account_email": "pangeo-forge-dataflow@pangeo-forge-4967.iam.gserviceaccount.com",
+                "project_id": "pangeo-forge-4967",
+                "temp_gcs_location": "gs://pangeo-forge-prod-dataflow/temp",
+            },qq
+            "TargetStorage": {
+                "fsspec_class": "s3fs.S3FileSystem",
+                "fsspec_kwargs": {
+                    "key": "${{ secrets.PANGEO_FORGE_OSN_KEY }}",
+                    "secret": "${{ secrets.PANGEO_FORGE_OSN_SECRET }}",
+                    "client_kwargs": {
+                        "endpoint_url": "https://ncsa.osn.xsede.org"
+                    },
+                    "default_cache_type": "none",
+                    "default_fill_cache": false,
+                    "use_listings_cache": false
+                },
+                "root_path": "Pangeo/pangeo-forge/aqua-modis-feedstock/{job_name}"
+            },
+            "InputCacheStorage": {
+                "fsspec_class": "gcsfs.GCSFileSystem",
+                "root_path": "gs://pangeo-forge-prod-cache"
+            }
+            }
         env:
           GOOGLE_APPLICATION_CREDENTIALS: "${{ steps.auth.outputs.credentials_file_path }}"
           EARTHDATA_USERNAME: cisaacstern
