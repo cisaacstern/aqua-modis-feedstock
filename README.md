@@ -1,1 +1,1 @@
-# ocean-color-dataset
+# aqua-modis-feedstock
