@@ -46,7 +46,7 @@ jobs:
             },
             "TargetStorage": {
                 "fsspec_class": "s3fs.S3FileSystem",
-                "fsspec_kwargs": {
+                "fsspec_args": {
                     "key": "${{ secrets.PANGEO_FORGE_OSN_KEY }}",
                     "secret": "${{ secrets.PANGEO_FORGE_OSN_SECRET }}",
                     "client_kwargs": {
