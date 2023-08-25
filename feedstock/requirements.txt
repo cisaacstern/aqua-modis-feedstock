@@ -1,2 +1,2 @@
 # FIXME: pinned to latest commit on main because concurrency limiting is not released yet
-"git+https://github.com/pangeo-forge/pangeo-forge-recipes.git@f8dd0387b011eb16aefa178edd4c371ee414a445"
+"git+https://github.com/pangeo-forge/pangeo-forge-recipes.git@f8dd0387b011eb16aefa178edd4c371ee414a445#egg=pangeo_forge_recipes"
