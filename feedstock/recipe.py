@@ -1,4 +1,5 @@
 import datetime as dt
+import itertools
 import os
 
 import aiohttp
@@ -13,8 +14,28 @@ from pangeo_forge_recipes.transforms import (
     StoreToZarr,
     T,
 )
+ 
+def make_dates(freq="8D"):
+    """Create the list of dates of available data."""
+    start, end = "01-01", "12-27"  # annual start and end days
+    # first year starts in july
+    _2002 = pd.date_range("2002-07-04", f"2002-{end}", freq=freq).to_list()
+    # no missing data for these years. first create a nested list, then flatten it.
+    _2003_2021_nested = [
+        pd.date_range(f"{yr}-{start}", f"{yr}-{end}", freq=freq).to_list()
+        for yr in range(2003, 2022)
+    ]
+    _2003_2021 = list(itertools.chain.from_iterable(_2003_2021_nested))
+    _2022 = (  # special case this year beacuse there's one day ("2022-04-07") of missing data
+        pd.date_range(f"2022-{start}", f"2022-{end}", freq=freq).drop(pd.Timestamp("2022-04-07"))
+    ).to_list()
+    # final year is a special case because it ends in july
+    _2023 = pd.date_range(f"2023-{start}", f"2023-07-27", freq=freq).to_list()
+    # now flatten everything 
+    return list(itertools.chain.from_iterable([_2002, _2003_2021, _2022, _2023]))
 
-dates = pd.date_range("2002-07-04", "2002-07-11", freq="8D")
+
+dates = make_dates()
 variables = ["CHL.chlor_a", "IOP.bbp_443", "SST.sst"]
 
 
