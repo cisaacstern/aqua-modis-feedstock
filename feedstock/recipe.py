@@ -17,22 +17,15 @@ from pangeo_forge_recipes.transforms import (
  
 def make_dates(freq="8D"):
     """Create the list of dates of available data."""
-    start, end = "01-01", "12-27"  # annual start and end days
-    # first year starts in july
-    _2002 = pd.date_range("2002-07-04", f"2002-{end}", freq=freq).to_list()
-    # no missing data for these years. first create a nested list, then flatten it.
-    _2003_2021_nested = [
-        pd.date_range(f"{yr}-{start}", f"{yr}-{end}", freq=freq).to_list()
-        for yr in range(2003, 2022)
-    ]
-    _2003_2021 = list(itertools.chain.from_iterable(_2003_2021_nested))
-    _2022 = (  # special case this year beacuse there's one day ("2022-04-07") of missing data
-        pd.date_range(f"2022-{start}", f"2022-{end}", freq=freq).drop(pd.Timestamp("2022-04-07"))
-    ).to_list()
-    # final year is a special case because it ends in july
-    _2023 = pd.date_range(f"2023-{start}", f"2023-07-27", freq=freq).to_list()
-    # now flatten everything 
-    return list(itertools.chain.from_iterable([_2002, _2003_2021, _2022, _2023]))
+    yrs = {  # start with a dict of dates as if every year was complete...
+        yr: pd.date_range(f"{yr}-01-01", f"{yr}-12-27", freq=freq) for yr in range(2002, 2024)
+    }
+    # ...but we need to make some edits due to missing data
+    yrs[2002] = yrs[2002][slice(*yrs[2002].slice_locs("2002-07-04", "2002-12-27"))]
+    yrs[2022] = yrs[2022].drop("2022-04-07")
+    yrs[2023] = yrs[2023][slice(*yrs[2023].slice_locs("2023-01-01", "2023-07-27"))]
+    # now flatten everything to a single list
+    return list(itertools.chain.from_iterable(yrs.values()))
 
 
 dates = make_dates()
