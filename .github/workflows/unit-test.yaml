@@ -30,4 +30,3 @@ jobs:
         env:
           EARTHDATA_USERNAME: "foo"
           EARTHDATA_PASSWORD: "bar"
-g
