@@ -1,4 +1,4 @@
-name: Validate fnames
+name: Unit test
 
 on:
   push:
@@ -24,8 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r feedstock/requirements.txt
           python -m pip install aiohttp apache-beam pandas
-      - name: Validate
-        run: python .github/workflows/validate_fnames.py
+          python -m pip install pytest
+      - name: Test
+        run: pytest -v tests/
         env:
           EARTHDATA_USERNAME: "foo"
           EARTHDATA_PASSWORD: "bar"
+g
