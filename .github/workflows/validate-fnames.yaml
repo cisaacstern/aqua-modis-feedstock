@@ -26,3 +26,6 @@ jobs:
           python -m pip install aiohttp apache-beam pandas
       - name: Validate
         run: python .github/workflows/validate_fnames.py
+        env:
+          EARTHDATA_USERNAME: "foo"
+          EARTHDATA_PASSWORD: "bar"
