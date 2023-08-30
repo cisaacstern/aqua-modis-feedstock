@@ -86,6 +86,5 @@ transforms = (
         store_name="aqua-modis.zarr",
         combine_dims=pattern.combine_dim_keys,
         target_chunks={"time": 1, "lat": int(4320 / 2), "lon": int(8640 / 2)},
-        target_root=".",  # https://github.com/pangeo-forge/pangeo-forge-recipes/issues/587
     )
 )
