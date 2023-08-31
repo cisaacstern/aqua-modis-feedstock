@@ -27,6 +27,3 @@ jobs:
           python -m pip install pytest
       - name: Test
         run: pytest -v tests/
-        env:
-          EARTHDATA_USERNAME: "foo"
-          EARTHDATA_PASSWORD: "bar"
