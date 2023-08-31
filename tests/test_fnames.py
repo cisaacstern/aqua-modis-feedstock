@@ -18,10 +18,15 @@ def expected():
         with p.open() as f:
             fnames += f.read().splitlines()
 
-    # filter filenames down to the expected subset,
-    # which is only 4km data for the selected `variables`...
-    # ...and 2022-04-07 is missing in `sst`, so drop it from the other variables as well
+    # filter filenames to only 4km data for the selected variables
     expected = [f for f in fnames if "4km" in f and any([f".{v}" in f for v in variables])]
+    # we've found that the following date is missing from sst *only* (not other variables)
+    missing = "20220407"
+    # first of all, confirm that this is indeed the case
+    assert not any([(missing in f and "sst" in f) for f in expected])  # missing in sst
+    assert any([(missing in f and "chlor_a" in f) for f in expected])  # present in chlor_a
+    assert any([(missing in f and "bbp_443" in f) for f in expected])  # present in bbp_443
+    # now drop it from all variables, because we're not currently using it in the recipe
     expected = [e for e in expected if "20220407" not in e]
     expected.sort()
     return expected
