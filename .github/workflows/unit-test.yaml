@@ -1,0 +1,32 @@
+name: Unit test
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate-fnames:
+    name: deploy-recipes
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r feedstock/requirements.txt
+          python -m pip install aiohttp apache-beam pandas
+          python -m pip install pytest
+      - name: Test
+        run: pytest -v tests/
+        env:
+          EARTHDATA_USERNAME: "foo"
+          EARTHDATA_PASSWORD: "bar"

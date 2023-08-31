@@ -34,7 +34,13 @@ variables = ["CHL.chlor_a", "IOP.bbp_443", "SST.sst"]
 
 def make_modis_url(time: pd.Timestamp, var: str) -> str:
     fmt = "%Y%m%d"
-    end = time + dt.timedelta(days=7)
+    end = (
+        # typically the end timestamp is 7 days ahead...
+        time + dt.timedelta(days=7)
+        # unless this is dec26 or dec27, then end is dec31
+        if not time.strftime("%m-%d") in ("12-26", "12-27")
+        else pd.Timestamp(year=time.year, month=12, day=31)
+    )
     return (
         "https://oceandata.sci.gsfc.nasa.gov/ob/getfile/"
         f"AQUA_MODIS.{time.strftime(fmt)}_{end.strftime(fmt)}.L3m.8D.{var}.4km.nc"
