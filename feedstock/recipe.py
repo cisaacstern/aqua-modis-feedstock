@@ -23,6 +23,7 @@ def make_dates(freq="8D"):
     # ...but we need to make some edits due to missing data
     yrs[2002] = yrs[2002][slice(*yrs[2002].slice_locs("2002-07-04", "2002-12-27"))]
     yrs[2022] = yrs[2022].drop("2022-04-07")  # missing for `sst`, but not `bbp_403` + `chlor_a`
+    yrs[2022] = yrs[2022].drop("2022-04-15")  # missing for `chlor_a`, but not `sst` + `bbp_403`
     yrs[2023] = yrs[2023][slice(*yrs[2023].slice_locs("2023-01-01", "2023-07-20"))]
     # now flatten everything to a single list
     return list(itertools.chain.from_iterable(yrs.values()))
