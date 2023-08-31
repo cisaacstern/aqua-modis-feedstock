@@ -81,7 +81,9 @@ transforms = (
         open_kwargs={"block_size": 0, "client_kwargs": client_kwargs},
         max_concurrency=10,
     )
-    | OpenWithXarray()
+    | OpenWithXarray(
+        file_type=pattern.file_type,
+    )
     | Preprocess()
     | StoreToZarr(
         store_name="aqua-modis.zarr",
