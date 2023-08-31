@@ -70,21 +70,17 @@ def diff(expected: list, generated: list) -> list[dict]:
     """Two-way diff of the fname lists."""
     expected_but_not_generated = list(set(expected) - set(generated))
     generated_but_not_expected = list(set(generated) - set(expected))
-
-    return [
-        {"exp": exp, "gen": gen}
-        for exp, gen
-        in zip(expected_but_not_generated, generated_but_not_expected)
-    ]
+    return expected_but_not_generated, generated_but_not_expected
 
 
-def test_fnames(diff: list[dict]):
+def test_fnames(diff: tuple[list, list]):
     """Check that there is no difference between expected and generated."""
 
-    # if there is a difference, print it for reference
     for d in diff:
-        for k, v in d.items():
-            print(k, v)
-        print("-")
-    # but there shouldn't be one
-    assert not diff
+        # if there is a diff, pytest will print it for us in the AssertionError raised here, e.g.:
+        #    ```
+        #    >   assert len(d) == 0
+        #    E   AssertionError: assert 1 == 0
+        #    E    +  where 1 = len(['AQUA_MODIS.20220415_20220422.L3m.8D.CHL.chlor_a.4km.nc'])
+        #    ```
+        assert len(d) == 0
