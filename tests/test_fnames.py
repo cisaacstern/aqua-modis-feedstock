@@ -16,7 +16,9 @@ class RecipeAttrs:
 
 @pytest.fixture(scope="session")
 def recipe_attrs() -> RecipeAttrs:
-    # 'feedstock' is not actually an installed package, so make it discoverable here
+    # 'feedstock' is not actually an installed package, so make it discoverable here.
+    # (perhaps there's a better or more standard way to do this  described in:
+    # https://docs.pytest.org/en/7.1.x/explanation/pythonpath.html ?)
     feedstock = (Path(__file__).parent.parent / "feedstock").absolute().as_posix()
     sys.path.append(feedstock)
     with mock.patch.dict(os.environ, {"EARTHDATA_USERNAME": "FOO", "EARTHDATA_PASSWORD": "BAR"}):
