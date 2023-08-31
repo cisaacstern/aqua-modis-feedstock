@@ -1,15 +1,33 @@
+import os
 import sys
+from dataclasses import dataclass
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
-# 'feedstock' is not actually an installed package, so make it discoverable here
-sys.path.append((Path(__file__).parent.parent / "feedstock").absolute().as_posix())
-from recipe import dates, make_modis_url, variables  # type: ignore
+
+@dataclass
+class RecipeAttrs:
+    dates: list
+    make_modis_url: callable
+    variables: list
+
+
+@pytest.fixture(scope="session")
+def recipe_attrs() -> RecipeAttrs:
+    # 'feedstock' is not actually an installed package, so make it discoverable here
+    feedstock = (Path(__file__).parent.parent / "feedstock").absolute().as_posix()
+    sys.path.append(feedstock)
+    with mock.patch.dict(os.environ, {"EARTHDATA_USERNAME": "FOO", "EARTHDATA_PASSWORD": "BAR"}):
+        from recipe import dates, make_modis_url, variables  # type: ignore
+        yield RecipeAttrs(dates, make_modis_url, variables)
+        # teardown
+        sys.path.remove(feedstock)
 
 
 @pytest.fixture
-def expected():
+def expected(recipe_attrs: RecipeAttrs):
     """The expected fnames."""
 
     # load all filenames text files
@@ -19,7 +37,9 @@ def expected():
             fnames += f.read().splitlines()
 
     # filter filenames to only 4km data for the selected variables
-    expected = [f for f in fnames if "4km" in f and any([f".{v}" in f for v in variables])]
+    expected = [
+        f for f in fnames if "4km" in f and any([f".{v}" in f for v in recipe_attrs.variables])
+    ]
     # we've found that the following date is missing from sst *only* (not other variables)
     missing = "20220407"
     # first of all, confirm that this is indeed the case
@@ -33,11 +53,14 @@ def expected():
 
 
 @pytest.fixture
-def generated():
+def generated(recipe_attrs: RecipeAttrs):
     """Generate fnames using our recipe logic.
     Note that the `expected` list is *just* filenames (not full urls), so we parse accordingly.
     """
-    generated = [make_modis_url(d, var).split("getfile/")[-1] for d in dates for var in variables]
+    generated = [
+        recipe_attrs.make_modis_url(d, var).split("getfile/")[-1]
+        for d in recipe_attrs.dates
+        for var in recipe_attrs.variables]
     generated.sort()
     return generated
 
