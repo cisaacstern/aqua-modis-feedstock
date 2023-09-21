@@ -1,1 +1,1 @@
-git+https://github.com/pangeo-forge/pangeo-forge-recipes.git@target-root-default#egg=pangeo_forge_recipes
+git+https://github.com/pangeo-forge/pangeo-forge-recipes.git@verify-existing-opt#egg=pangeo_forge_recipes
