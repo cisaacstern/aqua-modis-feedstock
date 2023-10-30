@@ -1,1 +1,5 @@
+# note: this branch is paired with:
+# - https://github.com/pangeo-forge/deploy-recipe-action/tree/storage-cls-args
+# - https://github.com/pangeo-forge/pangeo-forge-runner/pull/106
+# these are referenced in the deploy.yaml workflow and should be reverted as well if/when this is reverted
 git+https://github.com/pangeo-forge/pangeo-forge-recipes.git@verify-existing-opt#egg=pangeo_forge_recipes
