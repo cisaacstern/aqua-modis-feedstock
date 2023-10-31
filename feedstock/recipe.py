@@ -80,7 +80,7 @@ transforms = (
     | OpenURLWithFSSpec(
         open_kwargs={"block_size": 0, "client_kwargs": client_kwargs},
         # in the current deployment, we expect all files to be cached already,
-        # so we are not concerned about limiting bandwidth.
+        # so we are not concerned about limiting bandwidth
         # max_concurrency=10,
     )
     | OpenWithXarray(
