@@ -79,7 +79,9 @@ transforms = (
     beam.Create(pattern.items())
     | OpenURLWithFSSpec(
         open_kwargs={"block_size": 0, "client_kwargs": client_kwargs},
-        max_concurrency=10,
+        # in the current deployment, we expect all files to be cached already,
+        # so we are not concerned about limiting bandwidth.
+        # max_concurrency=10,
     )
     | OpenWithXarray(
         file_type=pattern.file_type,
